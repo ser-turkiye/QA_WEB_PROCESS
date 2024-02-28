@@ -1,0 +1,161 @@
+plugins {
+    id 'groovy'
+    id 'java-library'
+}
+
+group = "com.ser.webcube"
+version = '1.0.0'
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repo.maven.apache.org/maven2/"
+    }
+    maven {
+        url "https://sergroup.jfrog.io/artifactory/public/"
+    }
+}
+
+dependencies {
+    def doxisVersion = "12.1.1"
+    implementation (group: 'com.ser.doxis4.webcube', name: 'webcube-api', version: "$doxisVersion")
+    implementation (group: 'com.ser.doxis4.webcube', name: 'groovy-webcube', version: "$doxisVersion")
+
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.2'
+    implementation group: 'org.json', name: 'json', version: '20231013'
+
+    // Servlet/JSP API
+    compileOnly "javax.servlet:javax.servlet-api:3.1.0"
+    compileOnly "javax.servlet.jsp:javax.servlet.jsp-api:2.3.3"
+    compileOnly "javax.el:javax.el-api:3.0.0"
+
+    implementation fileTree(dir: 'src/main/resources/WEB-INF/lib', include: '*.jar')
+    implementation fileTree(dir: 'src/main/resources/WEB-INF/images', include: '*.jar')
+
+    testImplementation 'junit:junit:4.13.2'
+}
+
+test {
+    useJUnit()
+}
+
+tasks.withType(GroovyCompile) {
+    groovyOptions.optimizationOptions.indy = true
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set("sources")
+}
+
+apply plugin: CubeDeployPlugin
+
+class CubeDeployPlugin implements Plugin<Project> {
+
+    //String baseURL = "http://dev.serturkiye.com/webcube"
+    String baseURL = "http://127.0.0.1/webcube"
+
+    /*
+    Map<String,String> params = [
+            name    : "QA-WEB-PROCESS",
+            user    : "admin",
+            password: "Ser@2023",
+            server  : "websrv01",
+            system  : "SERTR",
+            activate: "true",
+            override: "true"
+    ]
+    */
+
+    Map<String,String> params = [
+            name    : "QA-WEB-PROCESS",
+            user    : "admin",
+            password: "Ser@2023",
+            server  : "websrv01",
+            system  : "SERTR",
+            activate: "true",
+            override: "true"
+    ]
+
+    void apply(Project project) {
+        project.task('cubeDeploy') {
+            dependsOn(project.tasks.jar)
+            group = 'deployment'
+            doLast {
+                def jarName = new StringBuilder()
+                jarName << "build/libs/" + project.name << "-" << project.version << ".jar"
+                upload(project.file(jarName.toString()))
+            }
+        }
+        project.task('cubeDeploySource') {
+            dependsOn(project.tasks.sourceJar)
+            group = 'deployment'
+            doLast {
+                def jarName = new StringBuilder()
+                jarName << "build/libs/" + project.name << "-" << project.version << "-sources.jar"
+                upload(project.file(jarName.toString()))
+            }
+        }
+    }
+
+    void upload(File jarFile) {
+
+        def url = baseURL + "/admin/deploy"
+
+        println 'Deploying    : ' + jarFile.absolutePath
+        println 'Deploying to : ' + url
+
+        try {
+            // Test with GET access that fails quickly
+            url.toURL().getBytes()
+        }
+        catch (ConnectException cnex) {
+            throw new GradleException("Target not reached: " + url)
+        }
+        catch (FileNotFoundException fnex) {
+            throw new GradleException("Target not found: " + url)
+        }
+        catch (IOException ioex) {
+            // Expected response ist 405 - Beccause GET is not supported for the URL
+            if (!ioex.message.contains("405")) throw new GradleException("Target not allowed: " + url)
+        }
+
+        def conn = (HttpURLConnection)url.toURL().openConnection()
+        def boundary = '$$$$$$' + System.currentTimeMillis().toString() + '$$$$$$'
+        conn.doOutput = true
+        conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary)
+        def os = conn.outputStream
+        os.withWriter { ow ->
+            for (key in params.keySet()) {
+                ow << "--" + boundary + "\r\n"
+                ow << 'Content-Disposition: form-data; name="' << key << '"\r\n\r\n'
+                ow << params[key] << '\r\n'
+            }
+            ow << "--" + boundary + "\r\n"
+            ow << 'Content-Disposition: form-data; name="file"; filename="' + jarFile.name + '"\r\n'
+            ow << 'Content-Type: application/java-archive\r\n\r\n'
+            ow.flush()
+            jarFile.withInputStream { is -> os << is }
+            ow << "\r\n--" << boundary << "--\r\n"
+        }
+
+        if (conn.responseCode == 200) return
+
+        throw new GradleException("Upload failed. Problem with addins.xml? See webcube.log")
+    }
+
+}

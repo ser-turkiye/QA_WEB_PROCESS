@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension xmlns="http://addins.webcube.ser.com/v1" classpath=".;WEB-INF/lib;*">
+    <scripts>
+        <script active="{cxiBoolean}1"
+                class="com.ser.QADocPublish"
+                name="Quality Doc Publish Process"
+                processDef=""
+                processType="77c12a52-346c-476d-94fb-c2b51dbbe096"
+                reference=""
+                server=""
+                system=""
+                type="task"/>
+        <script active="{cxiBoolean}1"
+                class="com.ser.QADocDraft"
+                name="Quality Doc Revision Process"
+                processDef=""
+                processType="a973223d-96ef-44ed-bd15-552304ba21b3"
+                reference=""
+                server=""
+                system=""
+                type="task"/>
+        <script active="{cxiBoolean}1"
+                class="com.ser.QADocArchive"
+                name="Quality Doc Archive Process"
+                processDef=""
+                processType="af15f8e1-11f4-4ef9-893f-3d48cf1a744c"
+                reference=""
+                server=""
+                system=""
+                type="task"/>
+    </scripts>
+    <security>
+        <configuration>
+            <public-area>
+                <url-pattern>.*</url-pattern>
+            </public-area>
+        </configuration>
+    </security>
+</extension>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <RollingFile fileName="C:/SER/doxis/log/Tomcat/WSAutoAdddIn.log"
+                     filePattern="C:/SER/doxis/log/Tomcat/WSAutoAdddIn.%d{yyyy-MM-dd}.log"
+                     name="file">
+            <PatternLayout pattern="%d %p [%t] %c - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!--Loggers relevant for Java API Support BEGINS-->
+        <Logger additivity="false" level="error" name="org.apache.commons"/>
+        <Logger additivity="false" level="warn" name="com.ser.wfl.framework"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.services"/>
+        <Logger additivity="false"
+                level="warn"
+                name="de.ser.sst.shared.lang.LangUtils"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.comm.wireBinary"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.cache"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.session.SEDNASessionImpl"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.session.SessionRefreshTask"/>
+        <Logger additivity="false"
+                level="warn"
+                name="de.ser.doxis4.commons.clients"/>
+        <Logger additivity="false" level="warn" name="httpclient.wire.header"/>
+        <Logger additivity="false" level="warn" name="httpclient.wire.content"/>
+        <Logger additivity="false" level="warn" name="org.apache.cxf"/>
+        <Logger additivity="false" level="error" name="org.springframework"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.intuitivMetaData.implementation"/>
+        <Logger additivity="false" level="warn" name="de.ser.doxis4.commons"/>
+        <!--Loggers relevant for Blueline  Support BEGINS-->
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.client.bluelineimpl.imagingserviceimpl.RenderServiceWrapper"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.client.bluelineimpl"/>
+        <Logger additivity="false" level="warn" name="de.ser.swt.shared.singlejar"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.clientimpl.comm"/>
+        <Logger additivity="false" level="warn" name="org.apache.http"/>
+        <Logger additivity="false"
+                level="warn"
+                name="com.ser.sedna.blueline.imagingserviceloader"/>
+        <!--Logger relevant for CSB Performance BEGINS-->
+        <!-- <Logger name="com.ser.sedna.clientimpl.comm.AbstractCommunicationHandler.serverCalls" level="debug" additivity="false"/> -->
+        <!--Loggers relevant for webCube Support BEGINS-->
+        <!-- <Logger name="com.ser.cube" level="debug" additivity="false"/> -->
+        <!-- <Logger name="com.ser.evITAWeb" level="debug" additivity="false"/> -->
+        <Logger additivity="false" level="error" name="org.apache.jasper"/>
+        <Logger additivity="false" level="error" name="org.apache.velocity"/>
+        <Logger additivity="false" level="info" name="com.ser"/>
+    </Loggers>
+    <Root level="info">
+        <AppenderRef ref="file"/>
+    </Root>
+</Configuration>
