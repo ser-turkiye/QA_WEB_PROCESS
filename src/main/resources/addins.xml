@@ -28,6 +28,15 @@
                 server=""
                 system=""
                 type="task"/>
+        <script active="{cxiBoolean}1"
+                class="com.ser.QACapaDraft"
+                name="CAPA Process"
+                processDef=""
+                processType="bb57967e-c3ab-47bd-93c5-9bc591b468a7"
+                reference=""
+                server=""
+                system=""
+                type="task"/>
     </scripts>
     <security>
         <configuration>
