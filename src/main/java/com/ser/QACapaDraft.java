@@ -43,7 +43,7 @@ public class QACapaDraft extends TaskScripting {
         ITaskDefinition taskDefinition = getTask().getTaskDefinition();
         String activityName = taskDefinition.getName();
 
-        processView.setDialogType("new");
+        //processView.setDialogType("new");
 
     }
     public IStopFurtherAction stopFurtherAction(String etxt){
